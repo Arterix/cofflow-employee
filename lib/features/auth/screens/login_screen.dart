@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
@@ -139,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   BrewTextField(
                     controller: _emailController,
                     label: 'Email',
-                    hint: 'kasir@cofflow.id',
+                    hint: 'kasir@koncospace.id',
                     keyboardType: TextInputType.emailAddress,
                     prefixIcon: Icons.email_outlined,
                     textInputAction: TextInputAction.next,
@@ -196,23 +197,10 @@ class _Logo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          width: 88,
-          height: 88,
-          decoration: BoxDecoration(
-            color: AppColors.primary,
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: const Icon(
-            Icons.local_cafe,
-            color: AppColors.onPrimary,
-            size: 48,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        Text(
-          'Cofflow Cashier',
-          style: AppTypography.heading3.copyWith(color: AppColors.primary),
+        SvgPicture.asset(
+          'assets/images/koncospace_logo.svg',
+          width: 220,
+          fit: BoxFit.contain,
         ),
       ],
     );
@@ -228,13 +216,13 @@ class _MockAccountsPanel extends StatelessWidget {
   static const _accounts = <_MockAccount>[
     _MockAccount(
       label: 'Admin',
-      email: 'admin@cofflow.test',
+      email: 'admin@koncospace.test',
       password: 'password',
       icon: Icons.admin_panel_settings_outlined,
     ),
     _MockAccount(
       label: 'Kasir',
-      email: 'kasir@cofflow.test',
+      email: 'kasir@koncospace.test',
       password: 'password',
       icon: Icons.point_of_sale_outlined,
     ),

@@ -8,8 +8,8 @@ class LocalNotificationService {
       FlutterLocalNotificationsPlugin();
 
   static const AndroidNotificationChannel _channel = AndroidNotificationChannel(
-    'cofflow_orders',
-    'Pesanan Cofflow',
+    'konco_space_orders',
+    'Pesanan Konco Space',
     description: 'Notifikasi pesanan masuk dan update status',
     importance: Importance.high,
   );
@@ -29,7 +29,7 @@ class LocalNotificationService {
 
   static Future<void> show(RemoteMessage message) async {
     final notif = message.notification;
-    final title = notif?.title ?? message.data['title'] as String? ?? 'Cofflow';
+    final title = notif?.title ?? message.data['title'] as String? ?? 'Konco Space';
     final body = notif?.body ?? message.data['body'] as String? ?? '';
     await _plugin.show(
       message.hashCode,

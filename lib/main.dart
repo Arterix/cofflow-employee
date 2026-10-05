@@ -18,16 +18,16 @@ Future<void> main() async {
   // FCM init. Silently skips if google-services.json belum dipasang.
   await FcmService.initialize();
 
-  runApp(const CofflowEmployeeApp());
+  runApp(const KoncoSpaceEmployeeApp());
 }
 
-class CofflowEmployeeApp extends StatelessWidget {
-  const CofflowEmployeeApp({super.key});
+class KoncoSpaceEmployeeApp extends StatelessWidget {
+  const KoncoSpaceEmployeeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Cofflow Employee',
+      title: 'Konco Space Employee',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       themeMode: ThemeMode.light,

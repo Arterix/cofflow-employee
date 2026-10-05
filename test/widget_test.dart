@@ -6,9 +6,9 @@ import 'package:employee_app/main.dart';
 
 void main() {
   testWidgets('App boots without crash', (WidgetTester tester) async {
-    await tester.pumpWidget(const CofflowEmployeeApp());
+    await tester.pumpWidget(const KoncoSpaceEmployeeApp());
     await tester.pump();
-    // Splash route renders a CircularProgressIndicator initially.
-    expect(find.byType(CofflowEmployeeApp), findsOneWidget);
+    expect(find.byType(KoncoSpaceEmployeeApp), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 250));
   });
 }

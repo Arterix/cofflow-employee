@@ -1,6 +1,6 @@
-# Cofflow Employee Cashier App
+# Konco Space Employee Cashier App
 
-Aplikasi Flutter Android untuk kasir & staff Cofflow coffee shop. Berkomunikasi dengan backend Laravel melalui REST API. Tidak ada koneksi langsung ke database — semua data lewat API.
+Aplikasi Flutter Android untuk kasir & staff **Konco Space** coffee shop. Berkomunikasi dengan backend Laravel melalui REST API. Tidak ada koneksi langsung ke database — semua data lewat API.
 
 ---
 
@@ -9,6 +9,7 @@ Aplikasi Flutter Android untuk kasir & staff Cofflow coffee shop. Berkomunikasi 
 ### Role Kasir
 - Login dengan akun staff (role `kasir` atau `admin`) — akun customer ditolak client-side
 - **POS Walk-in** — grid menu 3 kolom, search, filter kategori, condiment selection
+  - **Integrasi Condiment BOM**: Pemilihan condiment terhubung langsung dengan pemotongan stok bahan baku di backend (BOM menu + Condiment BOM).
   - **Multi-select**: tap menu berulang kali → menu sama tanpa condiment akan bump quantity baris yang sudah ada. Menu dengan condiment set berbeda dipisah jadi row tersendiri (bisa coexist).
   - Card layout pakai `Expanded` flex split (image flex 5 / text flex 4) + `childAspectRatio: 0.62` fixed → **no RenderFlex overflow di layar manapun** (sebelumnya overflow 17px di phone narrow). Hindari `LayoutBuilder` di sini karena bentrok dengan `RefreshIndicator` saat `CartController.notifyListeners` trigger setState (assert `_debugRelayoutBoundaryAlreadyMarkedNeedsLayout`).
 - **Cart Page** (`/cart`) — tab di bottom nav (badge count item). List item, qty stepper per row, hapus per row, kosongkan all (confirm dialog), total + tombol "Lanjut ke Pembayaran". Replace bottom sheet lama.
@@ -128,11 +129,17 @@ flutter run --dart-define=API_BASE_URL=<your-api-url>
 
 ## Test Account
 
-Akun staff harus dibuat oleh admin via Web Admin Dashboard atau via Laravel seeder/tinker di backend. **App tidak menyediakan fitur register** (sesuai design — staff dikelola admin).
+Akun staff dapat menggunakan akun seeded atau dibuat oleh admin via Web Admin Dashboard / tinker di backend. **App tidak menyediakan fitur register** (sesuai design — staff dikelola admin).
+
+Kredensial seeded bawaan:
+| Role | Email | Password |
+|---|---|---|
+| **Kasir** | `kasir@koncospace.test` | `password` |
+| **Admin** | `admin@koncospace.test` | `password` |
 
 Untuk testing role gate:
 - Login akun dengan role `kasir` atau `admin` → masuk
-- Login akun dengan role `customer` → ditolak: "Akun ini bukan akun staff"
+- Login akun dengan role `customer` (misal: `customer@koncospace.test`) → ditolak: "Akun ini bukan akun staff"
 - Login akun dengan `is_active = false` → ditolak: "Akun kamu dinonaktifkan"
 - Wrong credentials → "Email atau password salah" (form tidak reset)
 
@@ -263,4 +270,4 @@ Expected: `No issues found!`
 
 ## Lisensi
 
-Internal use only — Cofflow project.
+Internal use only — Proyek **Konco Space**.

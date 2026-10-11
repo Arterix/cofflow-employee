@@ -1,11 +1,11 @@
 {
-    "name": "employee_app",
-    "short_name": "employee_app",
+    "name": "Konco Space - Aplikasi Kasir",
+    "short_name": "Konco Kasir",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#2D1E18",
+    "theme_color": "#2D1E18",
+    "description": "Aplikasi Kasir Konco Space",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

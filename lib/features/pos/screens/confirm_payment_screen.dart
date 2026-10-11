@@ -118,7 +118,7 @@ class _ConfirmPaymentScreenState extends State<ConfirmPaymentScreen> {
               Navigator.pop(context);
               context.go('/pos');
             },
-            child: const Text('Kembali ke POS'),
+            child: const Text('Kembali ke Menu Kasir'),
           ),
         ],
       ),

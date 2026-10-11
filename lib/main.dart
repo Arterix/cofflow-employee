@@ -27,7 +27,7 @@ class KoncoSpaceEmployeeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Konco Space Employee',
+      title: 'Konco Space - Aplikasi Kasir',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       themeMode: ThemeMode.light,

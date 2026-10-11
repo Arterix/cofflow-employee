@@ -26,7 +26,7 @@ class _MainScaffoldState extends State<MainScaffold> {
   final _cart = CartController.instance;
 
   static const List<_TabSpec> _tabs = [
-    _TabSpec('/pos', 'POS', Icons.point_of_sale),
+    _TabSpec('/pos', 'Menu Kasir', Icons.point_of_sale),
     _TabSpec('/cart', 'Keranjang', Icons.shopping_cart_outlined),
     _TabSpec('/incoming-orders', 'Order', Icons.inbox),
     _TabSpec('/queue', 'Antrian', Icons.format_list_numbered),
@@ -110,7 +110,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                     if (context.screenWidth >= 1200) ...[
                       const SizedBox(width: 8),
                       const Text(
-                        'Konco POS',
+                        'Konco Space',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: AppColors.primary,

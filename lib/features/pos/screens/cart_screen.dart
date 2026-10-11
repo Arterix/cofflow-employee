@@ -66,9 +66,9 @@ class _CartScreenState extends State<CartScreen> {
     if (items.isEmpty) {
       return EmptyStateWidget(
         icon: Icons.shopping_cart_outlined,
-        message: 'Keranjang kosong. Pilih menu di POS dulu.',
+        message: 'Keranjang kosong. Pilih menu di Menu Kasir dulu.',
         onRetry: () => context.go('/pos'),
-        retryLabel: 'Kembali ke POS',
+        retryLabel: 'Kembali ke Menu Kasir',
       );
     }
     return ResponsiveContentContainer(

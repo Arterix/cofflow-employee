@@ -6,6 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_radius.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../shared/widgets/empty_state_widget.dart';
 import '../../../shared/widgets/shimmer_loader.dart';
 import '../../../shared/widgets/status_badge.dart';
@@ -71,37 +72,40 @@ class _QueueScreenState extends State<QueueScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (_estimate != null)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            color: AppColors.surface,
-            child: Row(
-              children: [
-                const Icon(Icons.schedule, color: AppColors.primary),
-                const SizedBox(width: AppSpacing.sm),
-                Text(
-                  'Estimasi tunggu: ~${_estimate!.minutes} menit',
-                  style: AppTypography.body2,
-                ),
-                const Spacer(),
-                Text(
-                  '${_estimate!.activeCount} aktif',
-                  style: AppTypography.caption.copyWith(
-                    color: AppColors.textSecondary,
+    return ResponsiveContentContainer(
+      maxWidth: 800,
+      child: Column(
+        children: [
+          if (_estimate != null)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.sm,
+              ),
+              color: AppColors.surface,
+              child: Row(
+                children: [
+                  const Icon(Icons.schedule, color: AppColors.primary),
+                  const SizedBox(width: AppSpacing.sm),
+                  Text(
+                    'Estimasi tunggu: ~${_estimate!.minutes} menit',
+                    style: AppTypography.body2,
                   ),
-                ),
-              ],
+                  const Spacer(),
+                  Text(
+                    '${_estimate!.activeCount} aktif',
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        const Divider(height: 1),
-        Expanded(child: _buildBody()),
-      ],
+          const Divider(height: 1),
+          Expanded(child: _buildBody()),
+        ],
+      ),
     );
   }
 

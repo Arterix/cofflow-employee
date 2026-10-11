@@ -6,6 +6,7 @@ import '../../../core/constants/app_radius.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../shared/widgets/brew_button.dart';
 import '../../../shared/widgets/empty_state_widget.dart';
 import '../state/cart_controller.dart';
@@ -70,50 +71,53 @@ class _CartScreenState extends State<CartScreen> {
         retryLabel: 'Kembali ke POS',
       );
     }
-    return Column(
-      children: [
-        Container(
-          color: AppColors.surface,
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.sm,
-            AppSpacing.sm,
-            AppSpacing.sm,
-          ),
-          child: Row(
-            children: [
-              Text(
-                '${_cart.itemCount} item dalam keranjang',
-                style: AppTypography.body2.copyWith(
-                  color: AppColors.textSecondary,
+    return ResponsiveContentContainer(
+      maxWidth: 760,
+      child: Column(
+        children: [
+          Container(
+            color: AppColors.surface,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.sm,
+              AppSpacing.sm,
+              AppSpacing.sm,
+            ),
+            child: Row(
+              children: [
+                Text(
+                  '${_cart.itemCount} item dalam keranjang',
+                  style: AppTypography.body2.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
-              ),
-              const Spacer(),
-              TextButton.icon(
-                onPressed: _confirmClear,
-                icon: const Icon(Icons.delete_sweep_outlined,
-                    size: 18, color: AppColors.alert),
-                label: const Text('Kosongkan',
-                    style: TextStyle(color: AppColors.alert)),
-              ),
-            ],
-          ),
-        ),
-        const Divider(height: 1),
-        Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            itemCount: items.length,
-            separatorBuilder: (_, _) =>
-                const SizedBox(height: AppSpacing.sm),
-            itemBuilder: (_, i) => _CartItemTile(
-              index: i,
-              cart: _cart,
+                const Spacer(),
+                TextButton.icon(
+                  onPressed: _confirmClear,
+                  icon: const Icon(Icons.delete_sweep_outlined,
+                      size: 18, color: AppColors.alert),
+                  label: const Text('Kosongkan',
+                      style: TextStyle(color: AppColors.alert)),
+                ),
+              ],
             ),
           ),
-        ),
-        _CheckoutBar(cart: _cart),
-      ],
+          const Divider(height: 1),
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              itemCount: items.length,
+              separatorBuilder: (_, _) =>
+                  const SizedBox(height: AppSpacing.sm),
+              itemBuilder: (_, i) => _CartItemTile(
+                index: i,
+                cart: _cart,
+              ),
+            ),
+          ),
+          _CheckoutBar(cart: _cart),
+        ],
+      ),
     );
   }
 }

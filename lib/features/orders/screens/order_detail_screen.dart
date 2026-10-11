@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../core/utils/snackbar_helper.dart';
 import '../../../shared/widgets/brew_button.dart';
 import '../../../shared/widgets/empty_state_widget.dart';
@@ -92,29 +93,32 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       );
     }
     final o = _order!;
-    return Column(
-      children: [
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: _load,
-            child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              children: [
-                _CustomerCard(order: o),
-                const SizedBox(height: AppSpacing.sm),
-                _QueueCard(order: o),
-                const SizedBox(height: AppSpacing.sm),
-                _ItemsCard(order: o),
-                const SizedBox(height: AppSpacing.sm),
-                _PaymentCard(order: o),
-                const SizedBox(height: AppSpacing.sm),
-                _TimelineCard(order: o),
-              ],
+    return ResponsiveContentContainer(
+      maxWidth: 800,
+      child: Column(
+        children: [
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: _load,
+              child: ListView(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                children: [
+                  _CustomerCard(order: o),
+                  const SizedBox(height: AppSpacing.sm),
+                  _QueueCard(order: o),
+                  const SizedBox(height: AppSpacing.sm),
+                  _ItemsCard(order: o),
+                  const SizedBox(height: AppSpacing.sm),
+                  _PaymentCard(order: o),
+                  const SizedBox(height: AppSpacing.sm),
+                  _TimelineCard(order: o),
+                ],
+              ),
             ),
           ),
-        ),
-        if (o.isActive) _ActionFooter(order: o, onAct: _act),
-      ],
+          if (o.isActive) _ActionFooter(order: o, onAct: _act),
+        ],
+      ),
     );
   }
 }

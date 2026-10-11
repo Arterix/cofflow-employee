@@ -7,6 +7,7 @@ import '../../../core/constants/app_radius.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../core/utils/snackbar_helper.dart';
 import '../../../shared/widgets/brew_button.dart';
 import '../../../shared/widgets/empty_state_widget.dart';
@@ -113,9 +114,21 @@ class _POSScreenState extends State<POSScreen> {
     );
   }
 
+  int _calculateCols(double availableWidth) {
+    if (availableWidth < 340) return 2;
+    if (availableWidth < 520) return 3;
+    if (availableWidth < 780) return 4;
+    if (availableWidth < 1100) return 5;
+    return 6;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final isSplit = context.screenWidth >= 900;
+    final catalogWidth = isSplit ? (context.screenWidth - 460) : context.screenWidth;
+    final cols = _calculateCols(catalogWidth);
+
+    final catalogContent = Column(
       children: [
         _SearchAndFilters(
           searchController: _searchController,
@@ -124,15 +137,30 @@ class _POSScreenState extends State<POSScreen> {
           onCategoryTap: (id) => setState(() => _activeCategoryId = id),
         ),
         const Divider(height: 1),
-        Expanded(child: _buildGrid()),
-        if (_cart.isNotEmpty) _CartBar(cart: _cart),
+        Expanded(child: _buildGrid(cols)),
+        if (!isSplit && _cart.isNotEmpty) _CartBar(cart: _cart),
       ],
     );
+
+    if (isSplit) {
+      return Row(
+        children: [
+          Expanded(child: catalogContent),
+          const VerticalDivider(width: 1, thickness: 1, color: AppColors.divider),
+          SizedBox(
+            width: 380,
+            child: _InlineCartSidePanel(cart: _cart),
+          ),
+        ],
+      );
+    }
+
+    return catalogContent;
   }
 
-  Widget _buildGrid() {
+  Widget _buildGrid(int cols) {
     if (_isLoading) {
-      return const ShimmerGrid(crossAxisCount: 3, itemCount: 9);
+      return ShimmerGrid(crossAxisCount: cols, itemCount: cols * 3);
     }
     if (_error != null) {
       return EmptyStateWidget(
@@ -148,19 +176,16 @@ class _POSScreenState extends State<POSScreen> {
         message: 'Tidak ada menu yang ditemukan',
       );
     }
-    // Fixed aspect ratio = no LayoutBuilder → no relayout-boundary assert.
-    // 0.62 fits image(flex 5) + text(flex 4) safely on phones 320-430dp.
-    // Expanded flex split inside _MenuCard absorbs any leftover space, so
-    // overflow is impossible regardless of grid cell height.
+    final ratio = cols <= 3 ? 0.64 : 0.72;
     return RefreshIndicator(
       onRefresh: _load,
       child: GridView.builder(
         padding: const EdgeInsets.all(AppSpacing.md),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: cols,
           crossAxisSpacing: AppSpacing.sm,
           mainAxisSpacing: AppSpacing.sm,
-          childAspectRatio: 0.62,
+          childAspectRatio: ratio,
         ),
         itemCount: list.length,
         itemBuilder: (_, i) =>
@@ -407,6 +432,210 @@ class _CartBar extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _InlineCartSidePanel extends StatelessWidget {
+  const _InlineCartSidePanel({required this.cart});
+  final CartController cart;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = cart.items;
+    return Container(
+      color: AppColors.surface,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.shopping_bag_outlined,
+                    color: AppColors.primary, size: 20),
+                const SizedBox(width: AppSpacing.xs),
+                Text('Pesanan Saat Ini', style: AppTypography.heading4),
+                const SizedBox(width: AppSpacing.xs),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    '${cart.itemCount}',
+                    style: const TextStyle(
+                      color: AppColors.onPrimary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                if (items.isNotEmpty)
+                  TextButton(
+                    onPressed: () => cart.clear(),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.alert,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      minimumSize: const Size(0, 32),
+                    ),
+                    child: const Text('Reset', style: TextStyle(fontSize: 12)),
+                  ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: items.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.shopping_cart_outlined,
+                            size: 48,
+                            color:
+                                AppColors.textSecondary.withValues(alpha: 0.3),
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          Text(
+                            'Belum ada item dipilih',
+                            style: AppTypography.body2
+                                .copyWith(color: AppColors.textSecondary),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Sentuh menu untuk menambahkan ke pesanan',
+                            style: AppTypography.caption
+                                .copyWith(color: AppColors.textSecondary),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    itemCount: items.length,
+                    separatorBuilder: (_, _) =>
+                        const SizedBox(height: AppSpacing.sm),
+                    itemBuilder: (_, i) {
+                      final it = items[i];
+                      return Container(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        decoration: BoxDecoration(
+                          color: AppColors.background,
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                          border: Border.all(color: AppColors.divider),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    it.menu.name,
+                                    style: AppTypography.body1.copyWith(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  if (it.selectedCondiments.isNotEmpty)
+                                    Text(
+                                      it.condimentSummary,
+                                      style: AppTypography.caption.copyWith(
+                                          color: AppColors.textSecondary),
+                                    ),
+                                  if (it.notes != null && it.notes!.isNotEmpty)
+                                    Text(
+                                      'Catatan: ${it.notes}',
+                                      style: AppTypography.caption.copyWith(
+                                        color: AppColors.textSecondary,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    formatRupiah(it.subtotal),
+                                    style: AppTypography.label.copyWith(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.remove_circle_outline,
+                                      size: 20),
+                                  color: AppColors.textSecondary,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  onPressed: () => cart.decrementAt(i),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 6),
+                                  child: Text('${it.quantity}',
+                                      style: AppTypography.heading4),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.add_circle_outline,
+                                      size: 20),
+                                  color: AppColors.primary,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  onPressed: () => cart.incrementAt(i),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ),
+          if (items.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: const BoxDecoration(
+                color: AppColors.surface,
+                border: Border(top: BorderSide(color: AppColors.divider)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Total Pembayaran', style: AppTypography.body2),
+                      Text(
+                        formatRupiah(cart.total),
+                        style: AppTypography.heading3
+                            .copyWith(color: AppColors.primary),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  BrewButton(
+                    label: 'Proses Pembayaran',
+                    onPressed: () => context.push('/cart'),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

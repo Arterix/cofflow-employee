@@ -7,6 +7,7 @@ import '../../../core/constants/app_radius.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../shared/widgets/brew_button.dart';
 import '../../../shared/widgets/brew_text_field.dart';
 import '../../orders/services/order_service.dart';
@@ -129,69 +130,72 @@ class _ConfirmPaymentScreenState extends State<ConfirmPaymentScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Konfirmasi Pembayaran')),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                children: [
-                  _SummaryCard(cart: _cart),
-                  const SizedBox(height: AppSpacing.lg),
-                  Text('Metode Pembayaran',
-                      style: AppTypography.heading4),
-                  const SizedBox(height: AppSpacing.sm),
-                  SegmentedButton<_PaymentMethod>(
-                    segments: const [
-                      ButtonSegment(
-                        value: _PaymentMethod.cash,
-                        label: Text('Cash'),
-                        icon: Icon(Icons.payments_outlined),
-                      ),
-                      ButtonSegment(
-                        value: _PaymentMethod.qris,
-                        label: Text('QRIS'),
-                        icon: Icon(Icons.qr_code),
-                      ),
-                      ButtonSegment(
-                        value: _PaymentMethod.virtualAccount,
-                        label: Text('VA'),
-                        icon: Icon(Icons.account_balance),
-                      ),
-                    ],
-                    selected: {_method},
-                    onSelectionChanged: (s) {
-                      setState(() => _method = s.first);
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  if (_method == _PaymentMethod.cash) _buildCashSection(),
-                  if (_method == _PaymentMethod.virtualAccount)
-                    _buildVASection(),
-                  if (_error != null) ...[
-                    const SizedBox(height: AppSpacing.md),
-                    Container(
-                      padding: const EdgeInsets.all(AppSpacing.sm),
-                      decoration: BoxDecoration(
-                        color: AppColors.alert.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
-                      ),
-                      child: Text(
-                        _error!,
-                        style: AppTypography.body2.copyWith(
-                          color: AppColors.alert,
+        child: ResponsiveContentContainer(
+          maxWidth: 720,
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  children: [
+                    _SummaryCard(cart: _cart),
+                    const SizedBox(height: AppSpacing.lg),
+                    Text('Metode Pembayaran',
+                        style: AppTypography.heading4),
+                    const SizedBox(height: AppSpacing.sm),
+                    SegmentedButton<_PaymentMethod>(
+                      segments: const [
+                        ButtonSegment(
+                          value: _PaymentMethod.cash,
+                          label: Text('Cash'),
+                          icon: Icon(Icons.payments_outlined),
+                        ),
+                        ButtonSegment(
+                          value: _PaymentMethod.qris,
+                          label: Text('QRIS'),
+                          icon: Icon(Icons.qr_code),
+                        ),
+                        ButtonSegment(
+                          value: _PaymentMethod.virtualAccount,
+                          label: Text('VA'),
+                          icon: Icon(Icons.account_balance),
+                        ),
+                      ],
+                      selected: {_method},
+                      onSelectionChanged: (s) {
+                        setState(() => _method = s.first);
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    if (_method == _PaymentMethod.cash) _buildCashSection(),
+                    if (_method == _PaymentMethod.virtualAccount)
+                      _buildVASection(),
+                    if (_error != null) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      Container(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        decoration: BoxDecoration(
+                          color: AppColors.alert.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                        ),
+                        child: Text(
+                          _error!,
+                          style: AppTypography.body2.copyWith(
+                            color: AppColors.alert,
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-            _FooterBar(
-              total: _total,
-              onConfirm: _canSubmit ? _submit : null,
-              isLoading: _submitting,
-            ),
-          ],
+              _FooterBar(
+                total: _total,
+                onConfirm: _canSubmit ? _submit : null,
+                isLoading: _submitting,
+              ),
+            ],
+          ),
         ),
       ),
     );

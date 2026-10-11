@@ -39,12 +39,15 @@ class BrewButton extends StatelessWidget {
           )
         : Text(label);
 
+    final minSize = isFullWidth ? const Size.fromHeight(48) : const Size(64, 48);
+
     final btn = outlined
         ? OutlinedButton(
             onPressed: disabled ? null : onPressed,
             style: OutlinedButton.styleFrom(
               foregroundColor: bg,
               side: BorderSide(color: bg),
+              minimumSize: minSize,
             ),
             child: child,
           )
@@ -55,6 +58,7 @@ class BrewButton extends StatelessWidget {
               foregroundColor: fg,
               disabledBackgroundColor: bg.withValues(alpha: 0.5),
               disabledForegroundColor: fg,
+              minimumSize: minSize,
             ),
             child: child,
           );

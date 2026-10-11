@@ -6,6 +6,7 @@ import '../../../core/constants/app_radius.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../core/utils/snackbar_helper.dart';
 import '../../../shared/widgets/brew_button.dart';
 import '../state/cart_controller.dart';
@@ -69,58 +70,61 @@ class _PaymentMockupScreenState extends State<PaymentMockupScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Pembayaran (Mockup)')),
       body: SafeArea(
-        child: Column(
-          children: [
-            const _MockupBanner(),
-            Expanded(
-              child: ListView(
+        child: ResponsiveContentContainer(
+          maxWidth: 720,
+          child: Column(
+            children: [
+              const _MockupBanner(),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  children: [
+                    _TotalCard(total: _cart.total, itemCount: _cart.itemCount),
+                    const SizedBox(height: AppSpacing.lg),
+                    Text('Metode Pembayaran', style: AppTypography.heading4),
+                    const SizedBox(height: AppSpacing.sm),
+                    _MethodTile(
+                      method: _MockMethod.cash,
+                      icon: Icons.payments_outlined,
+                      label: 'Cash',
+                      subtitle: 'Bayar di kasir, hitung kembalian manual',
+                      selected: _method == _MockMethod.cash,
+                      onTap: () => setState(() => _method = _MockMethod.cash),
+                    ),
+                    _MethodTile(
+                      method: _MockMethod.qris,
+                      icon: Icons.qr_code_2,
+                      label: 'QRIS',
+                      subtitle: 'Scan QR via mobile banking / e-wallet',
+                      selected: _method == _MockMethod.qris,
+                      onTap: () => setState(() => _method = _MockMethod.qris),
+                    ),
+                    _MethodTile(
+                      method: _MockMethod.virtualAccount,
+                      icon: Icons.account_balance,
+                      label: 'Virtual Account',
+                      subtitle: 'Transfer ke nomor VA per bank',
+                      selected: _method == _MockMethod.virtualAccount,
+                      onTap: () =>
+                          setState(() => _method = _MockMethod.virtualAccount),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
                 padding: const EdgeInsets.all(AppSpacing.lg),
-                children: [
-                  _TotalCard(total: _cart.total, itemCount: _cart.itemCount),
-                  const SizedBox(height: AppSpacing.lg),
-                  Text('Metode Pembayaran', style: AppTypography.heading4),
-                  const SizedBox(height: AppSpacing.sm),
-                  _MethodTile(
-                    method: _MockMethod.cash,
-                    icon: Icons.payments_outlined,
-                    label: 'Cash',
-                    subtitle: 'Bayar di kasir, hitung kembalian manual',
-                    selected: _method == _MockMethod.cash,
-                    onTap: () => setState(() => _method = _MockMethod.cash),
-                  ),
-                  _MethodTile(
-                    method: _MockMethod.qris,
-                    icon: Icons.qr_code_2,
-                    label: 'QRIS',
-                    subtitle: 'Scan QR via mobile banking / e-wallet',
-                    selected: _method == _MockMethod.qris,
-                    onTap: () => setState(() => _method = _MockMethod.qris),
-                  ),
-                  _MethodTile(
-                    method: _MockMethod.virtualAccount,
-                    icon: Icons.account_balance,
-                    label: 'Virtual Account',
-                    subtitle: 'Transfer ke nomor VA per bank',
-                    selected: _method == _MockMethod.virtualAccount,
-                    onTap: () =>
-                        setState(() => _method = _MockMethod.virtualAccount),
-                  ),
-                ],
+                decoration: const BoxDecoration(
+                  color: AppColors.surface,
+                  border: Border(top: BorderSide(color: AppColors.divider)),
+                ),
+                child: BrewButton(
+                  label: 'Bayar Sekarang',
+                  isLoading: _processing,
+                  onPressed: _cart.isEmpty ? null : _pay,
+                ),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              decoration: const BoxDecoration(
-                color: AppColors.surface,
-                border: Border(top: BorderSide(color: AppColors.divider)),
-              ),
-              child: BrewButton(
-                label: 'Bayar Sekarang',
-                isLoading: _processing,
-                onPressed: _cart.isEmpty ? null : _pay,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -9,6 +9,7 @@ import '../../../core/constants/app_radius.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../core/utils/snackbar_helper.dart';
 import '../../../shared/widgets/brew_button.dart';
 import '../../../shared/widgets/confirm_dialog.dart';
@@ -94,7 +95,8 @@ class _VAPaymentScreenState extends State<VAPaymentScreen> {
           automaticallyImplyLeading: false,
         ),
         body: SafeArea(
-          child: Padding(
+          child: ResponsiveContentContainer(
+            maxWidth: 480,
             padding: const EdgeInsets.all(AppSpacing.xl),
             child: Column(
               children: [

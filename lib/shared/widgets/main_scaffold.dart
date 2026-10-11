@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/utils/responsive.dart';
 import '../../features/auth/services/auth_api_service.dart';
 import '../../features/orders/state/incoming_badge_controller.dart';
 import '../../features/pos/state/cart_controller.dart';
@@ -89,6 +90,76 @@ class _MainScaffoldState extends State<MainScaffold> {
     final tab = _tabs[index];
     final incomingCount = _badge.pendingCount;
     final cartCount = _cart.itemCount;
+    final isWide = context.isWide;
+
+    if (isWide) {
+      return Scaffold(
+        body: Row(
+          children: [
+            NavigationRail(
+              selectedIndex: index,
+              backgroundColor: AppColors.surface,
+              extended: context.screenWidth >= 1200,
+              minExtendedWidth: 180,
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.coffee, color: AppColors.primary, size: 28),
+                    if (context.screenWidth >= 1200) ...[
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Konco POS',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              trailing: Expanded(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: IconButton(
+                      icon: const Icon(Icons.logout, color: AppColors.alert),
+                      tooltip: 'Logout',
+                      onPressed: () => _confirmLogout(context),
+                    ),
+                  ),
+                ),
+              ),
+              onDestinationSelected: (i) {
+                if (i == index) return;
+                context.go(_tabs[i].path);
+              },
+              destinations: [
+                for (int i = 0; i < _tabs.length; i++)
+                  NavigationRailDestination(
+                    icon: _iconFor(i, incomingCount, cartCount),
+                    label: Text(_tabs[i].label),
+                  ),
+              ],
+            ),
+            const VerticalDivider(width: 1, thickness: 1, color: AppColors.divider),
+            Expanded(
+              child: Scaffold(
+                appBar: AppBar(
+                  title: Text(tab.label),
+                  automaticallyImplyLeading: false,
+                ),
+                body: widget.child,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(

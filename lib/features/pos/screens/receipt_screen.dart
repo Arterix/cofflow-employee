@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../shared/widgets/brew_button.dart';
 import '../../orders/models/order.dart';
 import '../state/cart_controller.dart';
@@ -62,7 +63,8 @@ class _ReceiptScreenState extends State<ReceiptScreen>
           automaticallyImplyLeading: false,
         ),
         body: SafeArea(
-          child: Padding(
+          child: ResponsiveContentContainer(
+            maxWidth: 560,
             padding: const EdgeInsets.all(AppSpacing.xl),
             child: Column(
               children: [

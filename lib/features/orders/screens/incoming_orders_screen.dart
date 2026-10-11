@@ -10,6 +10,7 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/services/notification_event_bus.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../core/utils/snackbar_helper.dart';
 import '../../../shared/widgets/brew_button.dart';
 import '../../../shared/widgets/empty_state_widget.dart';
@@ -108,17 +109,33 @@ class _IncomingOrdersScreenState extends State<IncomingOrdersScreen> {
         message: 'Belum ada pesanan masuk',
       );
     }
+    final isWide = context.isWide;
     return RefreshIndicator(
       onRefresh: _load,
-      child: ListView.separated(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        itemCount: list.length,
-        separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-        itemBuilder: (_, i) => _OrderCard(
-          order: list[i],
-          onUpdate: () => _load(silent: true),
-        ),
-      ),
+      child: isWide
+          ? GridView.builder(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 480,
+                mainAxisExtent: 185,
+                crossAxisSpacing: AppSpacing.md,
+                mainAxisSpacing: AppSpacing.md,
+              ),
+              itemCount: list.length,
+              itemBuilder: (_, i) => _OrderCard(
+                order: list[i],
+                onUpdate: () => _load(silent: true),
+              ),
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              itemCount: list.length,
+              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+              itemBuilder: (_, i) => _OrderCard(
+                order: list[i],
+                onUpdate: () => _load(silent: true),
+              ),
+            ),
     );
   }
 }

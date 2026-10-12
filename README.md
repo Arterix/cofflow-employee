@@ -2,6 +2,43 @@
 
 Aplikasi Flutter Android untuk kasir & staff **Konco Space** coffee shop. Berkomunikasi dengan backend Laravel melalui REST API. Tidak ada koneksi langsung ke database — semua data lewat API.
 
+> **Wajib:** jalankan **`cofflow-webadmin` lebih dulu** (`php artisan serve --host=127.0.0.1 --port=8000`). Database dan API ada di sana; tanpa itu login akan gagal. Lihat [Quick Start](#quick-start-lokal).
+
+---
+
+## Quick Start (Lokal)
+
+Urutan dari nol sampai app tampil di Chrome:
+
+1. **Jalankan webadmin** di terminal 1 (setup pertama kali ada di README `cofflow-webadmin`):
+   ```powershell
+   cd ..\cofflow-webadmin
+   php artisan serve --host=127.0.0.1 --port=8000
+   ```
+   Pastikan http://127.0.0.1:8000/login bisa dibuka.
+
+2. **Install dependency employee** di terminal 2 (sekali saja):
+   ```powershell
+   cd ..\cofflow-employee
+   flutter pub get
+   ```
+
+3. **Jalankan app** sesuai target:
+
+   | Target | Perintah |
+   |---|---|
+   | Chrome (paling cepat untuk dev) | `flutter run -d chrome --web-port 8080 --dart-define=API_BASE_URL=http://127.0.0.1:8000/api` |
+   | Android emulator | `flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000/api` |
+   | HP fisik (satu Wi-Fi) | `flutter run --dart-define=API_BASE_URL=http://<IP-LAN-laptop>:8000/api` |
+
+   Untuk HP fisik, webadmin harus listen di semua interface: `php artisan serve --host=0.0.0.0 --port=8000`.
+
+4. **Login** dengan akun di bagian [Test Account](#test-account).
+
+5. **Berhenti:** tekan `q` di terminal Flutter, lalu `Ctrl+C` di terminal webadmin.
+
+Log `[FcmService] init skipped: ... FirebaseOptions cannot be null` saat jalan di Chrome itu **normal** — push notification hanya aktif di Android dengan `google-services.json`. App tetap berfungsi.
+
 ---
 
 ## Fitur
@@ -18,7 +55,7 @@ Aplikasi Flutter Android untuk kasir & staff **Konco Space** coffee shop. Berkom
 - **Receipt** — nomor antrian format 3 digit dengan animasi elastic scale-in
 - **Pesanan Masuk** — list pre-order dari Customer App, filter status, status transition (pending → processing → ready → completed), cancel dengan alasan
 - **Order Detail** — info pelanggan, items + condiment, payment, timeline status log
-- **Antrian Aktif** — auto-refresh tiap 10 detik, ready order highlight border hijau
+- **Antrian Aktif** — auto-refresh tiap 10 detik, ready order highlight border hijau. Nomor antrian responsive: lebar kolom mengikuti panjang nomor dan otomatis mengecil (`FittedBox`) supaya tidak menimpa nama; ukuran font 28 / 34 / 40 untuk HP / tablet / desktop; nama panjang dipotong "…"
 
 ### Push Notification (FCM)
 - `new_order` → auto-refresh daftar Pesanan Masuk + update badge count
@@ -27,7 +64,7 @@ Aplikasi Flutter Android untuk kasir & staff **Konco Space** coffee shop. Berkom
 
 ### Out of Scope
 - Admin features (CRUD menu, stok, pegawai) — dilakukan via Web Admin Dashboard
-- Loyalty point system
+- Loyalty point system — dikelola di Web Admin + Customer App. Catatan: poin member diberikan backend otomatis saat kasir mengubah status pre-order customer menjadi **completed**, dan voucher customer kembali jika pesanan dibatalkan. Walk-in tidak mendapat poin.
 - Customer App features
 
 ---
@@ -36,7 +73,7 @@ Aplikasi Flutter Android untuk kasir & staff **Konco Space** coffee shop. Berkom
 
 | Layer | Teknologi |
 |-------|-----------|
-| Framework | Flutter 3.44.x (Dart 3.12) — Android only |
+| Framework | Flutter 3.44.x (Dart 3.12) — target Android; Chrome dipakai untuk dev lokal |
 | Min Android SDK | 23 (`flutter_secure_storage` requirement) |
 | State Management | `StatefulWidget` + `setState` + `ChangeNotifier` singleton |
 | HTTP | `dio` ^5.4 |
@@ -84,7 +121,8 @@ lib/
 - **Flutter SDK 3.44.x** (Dart 3.12). Direkomendasikan install di path **tanpa spasi** (lihat Troubleshooting).
 - **Android Studio** + Android SDK 23+ + emulator/device fisik
 - **Firebase project** untuk FCM (atau lewati jika belum perlu push notification)
-- Backend API running (lokal atau cloud)
+- Backend API running — `cofflow-webadmin` di `http://127.0.0.1:8000` (lokal) atau URL cloud
+- Chrome (untuk `flutter run -d chrome`)
 
 ### 2. Install dependencies
 
@@ -97,6 +135,9 @@ flutter pub get
 Backend URL diatur via `--dart-define` saat build/run. **Jangan hardcode URL production di source code.**
 
 ```bash
+# Chrome (web) di laptop yang sama dengan webadmin
+flutter run -d chrome --web-port 8080 --dart-define=API_BASE_URL=http://127.0.0.1:8000/api
+
 # Local development (Android emulator → host)
 flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000/api
 
@@ -107,7 +148,7 @@ flutter run --dart-define=API_BASE_URL=http://<host-LAN-ip>:8000/api
 flutter run --dart-define=API_BASE_URL=https://<api-host>/api
 ```
 
-Default fallback (jika tidak ada `--dart-define`) ada di `lib/core/constants/app_constants.dart`.
+Default fallback (jika tidak ada `--dart-define`) = `http://10.0.2.2:8000/api` (Android emulator), di `lib/core/constants/app_constants.dart`. Untuk Chrome **wajib** isi `--dart-define`, karena `10.0.2.2` tidak bisa diakses dari browser.
 
 ### 4. Firebase setup (untuk FCM)
 
@@ -134,12 +175,12 @@ Akun staff dapat menggunakan akun seeded atau dibuat oleh admin via Web Admin Da
 Kredensial seeded bawaan:
 | Role | Email | Password |
 |---|---|---|
-| **Kasir** | `kasir@koncospace.test` | `password` |
-| **Admin** | `admin@koncospace.test` | `password` |
+| **Kasir** | `kasir@cofflow.test` | `password` |
+| **Admin** | `admin@cofflow.test` | `password` |
 
 Untuk testing role gate:
 - Login akun dengan role `kasir` atau `admin` → masuk
-- Login akun dengan role `customer` (misal: `customer@koncospace.test`) → ditolak: "Akun ini bukan akun staff"
+- Login akun dengan role `customer` (misal: `customer@cofflow.test`) → ditolak: "Akun ini bukan akun staff"
 - Login akun dengan `is_active = false` → ditolak: "Akun kamu dinonaktifkan"
 - Wrong credentials → "Email atau password salah" (form tidak reset)
 
@@ -215,6 +256,10 @@ Jangan share credential test via channel public — gunakan password manager tim
 | Alert | `#E57373` Cinnamon Red | Error, status "Dibatalkan", stok kritis, cancel button |
 | Heading | Poppins | AppBar title, card heading |
 | Body | Roboto | Body text, table, form |
+| Icon | Material Icons (`Icons.*`) | Semua icon |
+| Logo | `assets/images/koncospace_logo.svg` | Login screen + kiri atas sidebar (tablet/desktop) |
+
+App ini adalah **acuan tema** ekosistem Konco Space. Warna dan icon di `cofflow-customer` dan `cofflow-webadmin` mengikuti tabel di atas. Kalau mengubah warna di [lib/core/constants/app_colors.dart](lib/core/constants/app_colors.dart), samakan juga di `cofflow-customer/lib/main.dart` (`kBrand*`) dan `cofflow-webadmin/resources/css/app.css` (`@theme`).
 
 ---
 

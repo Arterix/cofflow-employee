@@ -145,6 +145,11 @@ class _QueueCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isReady = order.status == 'ready';
+    final double numberSize = context.isMobile
+        ? 28
+        : context.isTablet
+            ? 34
+            : 40;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -156,16 +161,29 @@ class _QueueCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          SizedBox(
-            width: 72,
-            child: Text(
-              order.queueNumberFormatted,
-              style: AppTypography.heading1.copyWith(
-                fontSize: 40,
-                color: AppColors.primary,
+          // Width follows the number; FittedBox shrinks long numbers
+          // instead of letting them overflow onto the customer name.
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: numberSize * 2,
+              maxWidth: numberSize * 3.2,
+            ),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                order.queueNumberFormatted,
+                maxLines: 1,
+                softWrap: false,
+                style: AppTypography.heading1.copyWith(
+                  fontSize: numberSize,
+                  height: 1.1,
+                  color: AppColors.primary,
+                ),
               ),
             ),
           ),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,16 +191,21 @@ class _QueueCard extends StatelessWidget {
                 Text(
                   order.customerName ?? '—',
                   style: AppTypography.body2,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   '${order.items.length} item',
                   style: AppTypography.caption.copyWith(
                     color: AppColors.textSecondary,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
+          const SizedBox(width: AppSpacing.sm),
           StatusBadge(status: order.status),
         ],
       ),

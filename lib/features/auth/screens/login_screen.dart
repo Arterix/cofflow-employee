@@ -216,13 +216,13 @@ class _MockAccountsPanel extends StatelessWidget {
   static const _accounts = <_MockAccount>[
     _MockAccount(
       label: 'Admin',
-      email: 'admin@koncospace.test',
+      email: 'admin@cofflow.test',
       password: 'password',
       icon: Icons.admin_panel_settings_outlined,
     ),
     _MockAccount(
       label: 'Kasir',
-      email: 'kasir@koncospace.test',
+      email: 'kasir@cofflow.test',
       password: 'password',
       icon: Icons.point_of_sale_outlined,
     ),

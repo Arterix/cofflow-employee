@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_colors.dart';
@@ -103,22 +104,11 @@ class _MainScaffoldState extends State<MainScaffold> {
               minExtendedWidth: 180,
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.coffee, color: AppColors.primary, size: 28),
-                    if (context.screenWidth >= 1200) ...[
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Konco Space',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ],
+                child: SvgPicture.asset(
+                  'assets/images/koncospace_logo.svg',
+                  width: context.screenWidth >= 1200 ? 150 : 56,
+                  fit: BoxFit.contain,
+                  semanticsLabel: 'Konco Space',
                 ),
               ),
               trailing: Expanded(
